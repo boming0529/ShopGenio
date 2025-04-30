@@ -1,0 +1,4 @@
+*.py[co]
+config.toml
+
+.venvuv

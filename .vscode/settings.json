@@ -1,0 +1,9 @@
+{
+    "cSpell.words": [
+    ],
+    "python.linting.pep8Enabled": false,
+    "python.linting.pep8Args": [
+        "--ignore=E501"
+    ],
+    "python.formatting.provider": "autopep8",
+}
