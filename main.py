@@ -1,5 +1,5 @@
 import json
-import os
+import uuid
 from pydantic import BaseModel, Field, ValidationError
 from typing import List, Dict, Any
 import google.generativeai as genai
@@ -8,6 +8,7 @@ import tomllib  # Python 3.11+
 # --- Entities ---
 class ProductEntity(BaseModel):
     """define master product entity for ECommerceCraft"""
+    # id: uuid.UUID = Field(description="product id", default_factory=lambda: uuid.uuid4())
     name: str = Field(description="product name")
     description: str = Field(description="description, about 50 to 100 words")
     price: float = Field(description="sale price")
@@ -43,9 +44,9 @@ class GeminiAdapter:
     @staticmethod
     def to_product(gemini_response: dict) -> ProductEntity:
         try:
-            return ProductEntity.parse_obj(gemini_response)
+            return ProductEntity.model_validate(gemini_response)
         except ValidationError as e:
-            raise ValueError(f"Gemini API 回應不符合 Product 結構: {e}")
+            raise ValueError(f"Gemini API response is not Product schema: {e}")
 
 # --- Infrastructure ---
 class ConfigManager:
@@ -127,7 +128,19 @@ def main():
         product = use_case.execute(product_name, keywords)
 
         # response
-        print(json.dumps(product.dict(), indent=2, ensure_ascii=False))
+        print(json.dumps(product.model_dump(), indent=2, ensure_ascii=False))
+
+        # {
+        #     "name": "Wireless Bluetooth Earphones",
+        #     "description": "Experience music like never before with our Wireless Bluetooth Earphones. Enjoy High-Quality Sound with deep bass and crystal-clear treble. The Stylish and sleek design makes them a fashion statement. These earphones are incredibly Portable, perfect for workouts, commutes, and travel. Enjoy the freedom of wireless connectivity and long-lasting battery life.",
+        #     "price": 1500.0,
+        #     "category": "Electronics",
+        #     "tags": [
+        #         "High-Quality Sound",
+        #         "Stylish",
+        #         "Portable"
+        #     ]
+        # }
 
     except Exception as e:
         print(f"error: {str(e)}")
