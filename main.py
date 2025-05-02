@@ -63,10 +63,10 @@ class ConfigManager:
             raise FileNotFoundError(f"config file {self.config_path} is not exits")
         except tomllib.TOMLDecodeError:
             raise ValueError(f"config file {self.config_path} format error")
-
-    def get_api_key(self) -> str:
+        
+    def get_api_key(self, api_name: str) -> str:
         """fetch Gemini API Key"""
-        return self.config.get("gemini", {}).get("api_key")
+        return self.config.get(api_name, {}).get("api_key")
     
 class GeminiClient:
     """Gemini API client for ECommerceCraft"""
@@ -88,6 +88,7 @@ class GeminiClient:
 # --- Use Cases ---
 class GenerateProductUseCase:
     """generate product business for shopGenio"""
+    # here need refactoring, the useCase "program to an interface, not an implementation."
     def __init__(self, gemini_client: GeminiClient, gemini_adapter: GeminiAdapter):
         self.gemini_client = gemini_client
         self.gemini_adapter = gemini_adapter
@@ -113,7 +114,7 @@ def main():
     try:
         # init infra
         config_manager = ConfigManager()
-        api_key = config_manager.get_api_key()
+        api_key = config_manager.get_api_key('gemini')
         gemini_client = GeminiClient(api_key)
         gemini_adapter = GeminiAdapter()
 
