@@ -1,2 +1,5 @@
 [gemini]
 api_key = "setting your key here"
+
+[grok]
+api_key = "setting your key here"
